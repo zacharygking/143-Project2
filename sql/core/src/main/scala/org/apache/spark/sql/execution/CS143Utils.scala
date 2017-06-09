@@ -132,10 +132,8 @@ object CS143Utils {
 
     if (udfExpressions.isEmpty)
       null
-    else {
-      println("udf : ", udfExpressions(udfExpressions.size -1).asInstanceOf[ScalaUdf])
+    else
       udfExpressions(udfExpressions.size - 1).asInstanceOf[ScalaUdf]
-    }
   }
 
   /**
@@ -254,9 +252,7 @@ object CachingIteratorGenerator {
 
         val preEvaluation = preUdfProjection.apply(row)
         val postEvaluation = postUdfProjection.apply(row)
-
-        //println(s"row $row rowkey $rowKey pre $preEvaluation udf $udfEvaluation postVal $postEvaluation")
-        //println(Row.fromSeq(preEvaluation ++ udfEvaluation ++ postEvaluation))
+        
         Row.fromSeq(preEvaluation ++ udfEvaluation ++ postEvaluation)
       }
     }
