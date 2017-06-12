@@ -144,7 +144,6 @@ private[sql] class DiskPartition (
 
       override def hasNext() = {
         /* IMPLEMENT THIS METHOD */
-        
         if (currentIterator.hasNext) 
           true
         else if (fetchNextChunk)
@@ -164,9 +163,10 @@ private[sql] class DiskPartition (
         if (!chunkSizeIterator.hasNext)
           false
         else {
-          var chunkSize: Int = chunkSizeIterator.next
-          byteArray = new Array[Byte](chunkSize)
-          iteratorStream.read(byteArray, 0, chunkSize)
+//          var chunkSize: Int = chunkSizeIterator.next
+//          byteArray = new Array[Byte](chunkSize)
+//          iteratorStream.read(byteArray, 0, chunkSize)
+          byteArray = getNextChunkBytes(inStream, chunkSizeIterator.next, byteArray)
           currentIterator = getListFromBytes(byteArray).iterator.asScala
           true
         }
@@ -230,7 +230,7 @@ private[sql] object DiskHashedRelation {
     val partitions: Array[DiskPartition] = new Array[DiskPartition](size)
     
     for (i <- 0 until size) {
-      partitions(i) = new DiskPartition("cs143_partition_" + i.toString, blockSize)
+      partitions(i) = new DiskPartition("cs143R_partition_" + i.toString, blockSize)
     }
 
     while (input.hasNext) {

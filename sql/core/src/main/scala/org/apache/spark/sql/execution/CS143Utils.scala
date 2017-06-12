@@ -187,8 +187,7 @@ object CS143Utils {
     * @return true if the addition of a new record will make the table grow beyond the allowed size
     */
   def maybeSpill[K, V](collection: SizeTrackingAppendOnlyMap[K, V], allowedMemory: Long): Boolean = {
-    /* IMPLEMENT THIS METHOD */
-    false
+    2 * collection.estimateSize() >= allowedMemory
   }
 }
 
@@ -252,7 +251,7 @@ object CachingIteratorGenerator {
 
         val preEvaluation = preUdfProjection.apply(row)
         val postEvaluation = postUdfProjection.apply(row)
-        
+
         Row.fromSeq(preEvaluation ++ udfEvaluation ++ postEvaluation)
       }
     }
@@ -273,15 +272,26 @@ object AggregateIteratorGenerator {
 
     new Iterator[Row] {
       val postAggregateProjection = CS143Utils.getNewProjection(resultExpressions, inputSchema)
+      val aggregateResults = new GenericMutableRow(1)
+      val joinedRow = new JoinedRow4
+
 
       def hasNext() = {
-        /* IMPLEMENT THIS METHOD */
-        false
+        input.hasNext
       }
 
       def next() = {
-        /* IMPLEMENT THIS METHOD */
-        null
+        if (!input.hasNext)
+          null
+        else {
+          val (currentGroup, currentAgg) = input.next
+//          val currentEntry = input.next
+//          val currentGroup = currentEntry.getKey
+//          val currentAgg = currentEntry.getValue
+          aggregateResults(0) = currentAgg(0).eval(EmptyRow)
+          postAggregateProjection(joinedRow(aggregateResults, currentGroup))
+
+        }
       }
     }
   }
